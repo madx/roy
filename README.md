@@ -47,3 +47,22 @@ Save this in a `.ru` file and `rackup`-it.
     end
 
     run RestString.new
+
+## Docs
+
+### Attributes
+
+* `env` (rw): the parameter for `call`
+* `response` (rw): a `Rack::Response` object that is returned by `call`
+* `header` (rw): a hash of headers that is part of `response`
+* `request` (r): a `Rack::Request` created from the environement given to `call`
+* `query` (r): a hash of parameters extracted from the query string
+* `data` (r): a hash of parameters extracted from the request body (POST, PUT)
+
+For both `query` and `data`, keys of the hash are are symbols.
+
+### Errors
+
+You can easily handle errors with the provided `http_error` method. It takes an
+error code and an optional message. If no message is given, the standard message
+from the HTTP Status Codes list will be used (eg. Not Found for 404)
