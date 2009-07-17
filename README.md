@@ -1,7 +1,7 @@
 # Rackable
 
-Rackable is a tiny module that aims to provide a REST-like interface to
-any object and make it usable with Rack.
+Rackable is a tiny module that aims to make any Ruby object Rack-friendly and
+provide it with a REST-like interface.
 
 Basically, what it does is providing an object with a `call()` method that
 uses the Rack environement to dispatch to a method, giving helper objects such

@@ -1,8 +1,3 @@
-# Rackable is a tiny module that aims to provide a REST-like interface to
-# any object and make it usable with Rack.
-#
-# I really don't know if this is useful, but it's more a proof of concept than
-# anything.
 module Rackable
   attr_accessor :response, :env,  :header
   attr_reader   :request,  :data, :query
