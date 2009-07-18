@@ -11,7 +11,6 @@ module Rackable
 
     rack.query = rack.request.GET.inject({})  {|h, (k,v)| h[k.to_sym] = v; h }
     rack.data  = rack.request.POST.inject({}) {|h, (k,v)| h[k.to_sym] = v; h }
-    
 
     method = rack.env['REQUEST_METHOD'].downcase.to_sym
 
