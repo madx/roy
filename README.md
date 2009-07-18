@@ -33,8 +33,8 @@ Save this in a `.ru` file and `rackup`-it.
       end
 
       def put()
-        if data[:body]
-          @string << data[:body]
+        if rack.data[:body]
+          @string << rack.data[:body]
         else
           http_error 400
         end
@@ -50,18 +50,17 @@ Save this in a `.ru` file and `rackup`-it.
 
 ## Docs
 
-### Attributes
+Rackable provides a `rack` readable attribute which is a struct containing the
+following fields:
 
-* `env` (rw): the parameter for `call`
-* `response` (rw): a `Rack::Response` object that is returned by `call`
-* `header` (rw): a hash of headers that is part of `response`
-* `request` (r): a `Rack::Request` created from the environement given to `call`
-* `query` (r): a hash of parameters extracted from the query string
-* `data` (r): a hash of parameters extracted from the request body (POST, PUT)
+* `env`: the parameter for `call`
+* `response`: a `Rack::Response` object that is returned by `call`
+* `header`: a hash of headers that is part of `response`
+* `request`: a `Rack::Request` created from the environement given to `call`
+* `query`: a hash of parameters extracted from the query string
+* `data`: a hash of parameters extracted from the request body (POST, PUT)
 
-For both `query` and `data`, keys of the hash are are symbols.
-
-### Errors
+For both `query` and `data`, keys of the hash are symbols.
 
 You can easily handle errors with the provided `http_error` method. It takes an
 error code and an optional message. If no message is given, the standard message

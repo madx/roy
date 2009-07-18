@@ -1,18 +1,21 @@
 module Rackable
-  attr_accessor :response, :env,  :header
-  attr_reader   :request,  :data, :query
+  attr_reader :rack
 
   def call(env)
-    @env      = env
-    @request  = Rack::Request.new(env)
-    @response = Rack::Response.new
-    @header   = response.header
-    @query    = request.GET.inject({})  {|h, (k,v)| h[k.to_sym] = v; h }
-    @data     = request.POST.inject({}) {|h, (k,v)| h[k.to_sym] = v; h }
+    @rack = Struct.new(:env, :request, :response, :header, :query, :data).new
+    rack.env = env
 
-    method = env['REQUEST_METHOD'].downcase.to_sym
+    rack.request  = Rack::Request.new(env)
+    rack.response = Rack::Response.new
+    rack.header   = rack.response.header
 
-    args = env['PATH_INFO'][1..-1].split('/').collect { |arg|
+    rack.query = rack.request.GET.inject({})  {|h, (k,v)| h[k.to_sym] = v; h }
+    rack.data  = rack.request.POST.inject({}) {|h, (k,v)| h[k.to_sym] = v; h }
+    
+
+    method = rack.env['REQUEST_METHOD'].downcase.to_sym
+
+    args = rack.env['PATH_INFO'][1..-1].split('/').collect { |arg|
       Rack::Utils.unescape(arg)
     }
 
@@ -23,7 +26,7 @@ module Rackable
         [200, send(method, *args)]
 
       rescue NoMethodError
-        header['Allow'] = [:get, :post, :put, :delete].delete_if { |meth|
+        rack.header['Allow'] = [:get, :post, :put, :delete].delete_if { |meth|
           !respond_to?(meth)
         }.tap {|a|
           a.unshift 'HEAD' if respond_to? :get
@@ -39,9 +42,9 @@ module Rackable
       end
     end
 
-    response.status = status
-    response.write(body) unless was_head
-    response.finish
+    rack.response.status = status
+    rack.response.write(body) unless was_head
+    rack.response.finish
   end
 
   private
@@ -71,16 +74,16 @@ if $0 =~ /bacon$/
     end
 
     def put()
-      if data[:body]
-        @string << data[:body]
+      if rack.data[:body]
+        @string << rack.data[:body]
       else
         http_error 400
       end
     end
 
     def delete()
-      if query[:p]
-        if @string =~ (rx = Regexp.new(query[:p]))
+      if rack.query[:p]
+        if @string =~ (rx = Regexp.new(rack.query[:p]))
           @string.gsub!(rx, '')
         else
           http_error 404, "Pattern #{rx.inspect} not found"
