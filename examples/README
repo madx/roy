@@ -1,0 +1,5 @@
+# Examples
+
+These are examples Rackable uses.
+
+Run them with `rackup` an test with `restclient`, `curl` or an equivalent.
