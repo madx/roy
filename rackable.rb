@@ -2,6 +2,8 @@ module Rackable
   attr_reader :rack
 
   def call(env)
+    allowed_methods = [:get, :put, :post, :delete]
+
     @rack = Struct.new(:env, :request, :response, :header, :query, :data).new
     rack.env = env
 
@@ -22,10 +24,11 @@ module Rackable
 
     status, body = catch(:halt) do
       begin
+        raise NoMethodError unless allowed_methods.include? method
         [200, send(method, *args)]
 
       rescue NoMethodError
-        rack.header['Allow'] = [:get, :post, :put, :delete].delete_if { |meth|
+        rack.header['Allow'] = allowed_methods.delete_if { |meth|
           !respond_to?(meth)
         }.tap {|a|
           a.unshift 'HEAD' if respond_to? :get
@@ -139,6 +142,11 @@ if $0 =~ /bacon$/
     it 'throws a 400 on argument errors' do
       get '/fail'
       last_response.status.should == 400
+    end
+
+    it 'prevents calling methods other than the allowed ones' do
+      request '/%22foo%22', "REQUEST_METHOD" => "INSTANCE_EVAL"
+      last_response.status.should == 405
     end
   end
 
