@@ -58,7 +58,7 @@ module Rackable
 end
 
 
-if $0 =~ /bacon$/
+if $0 =~ /bacon$/ && ARGV.include?(__FILE__)
   require 'rubygems'
   require 'rack/test'
 
