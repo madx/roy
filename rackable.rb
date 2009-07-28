@@ -22,10 +22,11 @@ module Rackable
 
     method, was_head = :get, true if method == :head
 
-    status, body = catch(:halt) do
+    rack.response.status, body = catch(:halt) do
       begin
         raise NoMethodError unless allowed_methods.include? method
-        [200, send(method, *args)]
+        body = send(method, *args)
+        [rack.response.status, body]
 
       rescue NoMethodError
         rack.header['Allow'] = allowed_methods.delete_if { |meth|
@@ -44,7 +45,6 @@ module Rackable
       end
     end
 
-    rack.response.status = status
     rack.response.write(body) unless was_head
     rack.response.finish
   end
@@ -58,7 +58,7 @@ module Rackable
 end
 
 
-if $0 =~ /bacon$/ && ARGV.include?(__FILE__)
+if $0 =~ /bacon$/ && ARGV.include?(File.basename(__FILE__))
   require 'rubygems'
   require 'rack/test'
 
@@ -96,11 +96,22 @@ if $0 =~ /bacon$/ && ARGV.include?(__FILE__)
     end
   end
 
-  def app
-    RestString.new
+  class Redirecter
+    extend Rackable
+
+    def self.get
+      rack.response.redirect('http://google.com')
+      "hello"
+    end
   end
 
   describe Rackable do
+    before do
+      def app
+        RestString.new
+      end
+    end
+
     it 'provides a call() method' do
       app.should.respond_to :call
     end
@@ -147,6 +158,19 @@ if $0 =~ /bacon$/ && ARGV.include?(__FILE__)
     it 'prevents calling methods other than the allowed ones' do
       request '/%22foo%22', "REQUEST_METHOD" => "INSTANCE_EVAL"
       last_response.status.should == 405
+    end
+
+    describe 'Called method' do
+      before do
+        def app() Redirecter end
+      end
+
+      it 'can modify the response' do
+        get '/'
+
+        last_response.headers['Location'].should == 'http://google.com'
+        last_response.status.should == 302
+      end
     end
   end
 
