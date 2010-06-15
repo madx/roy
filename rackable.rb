@@ -1,6 +1,9 @@
 module Rackable
   attr_reader :rack
 
+  class MethodNotAllowed < NoMethodError
+  end
+
   def call(env)
     allowed_methods = [:get, :put, :post, :delete]
 
@@ -16,19 +19,20 @@ module Rackable
 
     method = rack.env['REQUEST_METHOD'].downcase.to_sym
 
-    args = rack.env['PATH_INFO'][1..-1].split('/').collect { |arg|
+    path = rack.env['PATH_INFO'][1..-1]
+    args = path && path.any? ? path.split('/').collect { |arg|
       Rack::Utils.unescape(arg)
-    }
+    } : []
 
     method, was_head = :get, true if method == :head
 
     rack.response.status, body = catch(:halt) do
       begin
-        raise NoMethodError unless allowed_methods.include? method
+        raise MethodNotAllowed unless allowed_methods.include? method
         body = send(method, *args)
         [rack.response.status, body]
 
-      rescue NoMethodError
+      rescue MethodNotAllowed
         rack.header['Allow'] = allowed_methods.delete_if { |meth|
           !respond_to?(meth)
         }.tap {|a|
