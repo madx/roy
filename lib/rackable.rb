@@ -30,7 +30,7 @@ module Rackable
     rack.response.status, body = catch(:halt) do
       begin
         raise MethodNotAllowed unless allowed_methods.include? method
-        body = send(method, *args)
+        body = send(:"http_#{method}", *args)
         [rack.response.status, body]
 
       rescue MethodNotAllowed
