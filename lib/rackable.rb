@@ -19,10 +19,11 @@ module Rackable
 
     method = rack.env['REQUEST_METHOD'].downcase.to_sym
 
-    path = rack.env['PATH_INFO'][1..-1]
-    args = path && path.any? ? path.split('/').collect { |arg|
+    path = rack.env['PATH_INFO']
+    args = path.split(/\/+/).collect { |arg|
       Rack::Utils.unescape(arg)
-    } : []
+    } || []
+    args.empty? or args.first.empty? and args.shift
 
     method, was_head = :get, true if method == :head
 
