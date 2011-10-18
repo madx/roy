@@ -5,8 +5,27 @@ module Rackable
   end
 
   def call(env)
-    allowed_methods = [:get, :put, :post, :delete]
+    _ra_prepare(env)
 
+    method = rack.env['REQUEST_METHOD'].downcase.to_sym
+    path   = rack.env['PATH_INFO']
+    args   = _ra_split_path(path)
+
+    method, was_head = :get, true if method == :head
+
+    rack.response.status, body = _ra_method_call(method, args)
+
+    rack.response.write(body) unless was_head
+    rack.response.finish
+  end
+
+  private
+
+  def http_error(code, message=nil)
+    throw :halt, [code, message || Rack::Utils::HTTP_STATUS_CODES[code]]
+  end
+
+  def _ra_prepare(env)
     @rack = Struct.new(:env, :request, :response, :header, :query, :data).new
     rack.env = env
 
@@ -16,16 +35,19 @@ module Rackable
 
     rack.query = rack.request.GET.inject({})  {|h, (k,v)| h[k.to_sym] = v; h }
     rack.data  = rack.request.POST.inject({}) {|h, (k,v)| h[k.to_sym] = v; h }
+  end
 
-    method = rack.env['REQUEST_METHOD'].downcase.to_sym
-
-    path = rack.env['PATH_INFO']
+  def _ra_split_path(path)
     args = path.split(/\/+/).collect { |arg|
       Rack::Utils.unescape(arg)
     } || []
     args.empty? or args.first.empty? and args.shift
 
-    method, was_head = :get, true if method == :head
+    args
+  end
+
+  def _ra_method_call(method, args)
+    allowed_methods = [:get, :put, :post, :delete]
 
     rack.response.status, body = catch(:halt) do
       begin
@@ -49,15 +71,5 @@ module Rackable
 
       end
     end
-
-    rack.response.write(body) unless was_head
-    rack.response.finish
   end
-
-  private
-
-  def http_error(code, message=nil)
-    throw :halt, [code, message || Rack::Utils::HTTP_STATUS_CODES[code]]
-  end
-
 end
