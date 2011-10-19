@@ -1,36 +1,83 @@
-# Rackable
+Roy
+===
 
-Rackable is a tiny module that aims to make any Ruby object Rack-friendly and
-provide it with a REST-like interface.
+Roy is a tiny module that aims to make any Ruby object Rack-friendly and provite
+it with a REST-like interface.
 
-Basically, what it does is providing an object with a `call()` method that
-uses the Rack environement to dispatch to a method, giving helper objects such
-as headers, query parameters, ...
+Roy tries to be as less invasive as possible. In provides your objects with a
+`#call` method that takes a Rack environment and dispatchs to a regular method
+named after the HTTP method you want to catch.
 
-## Specs
+## Tests
 
-You can run the specs by running `bacon` on the `rackable.rb` file.
-Bacon is available at
-[chneukirchen/bacon](/chneukirchen/bacon "Bacon's GitHub repository")
+You can run the tests by running `rake test`. They are written with Minitest.
 
-## Examples
+## Example
 
-Look in the `examples/` folder.
+``` ruby
+class MessageQueue
+  include Roy
+
+  roy allow: [:get, :post, :delete]
+
+  def initialize
+    @stack = []
+  end
+
+  def get
+    @stack.inspect
+  end
+
+  def post
+    halt 403 unless roy.params[:item]
+    @stack << roy.params[:item].strip
+    get
+  end
+
+  def delete
+    @stack.shift.inspect
+  end
+end
+```
 
 ## Docs
 
-Rackable provides a `rack` readable attribute which is a struct containing the
-following fields:
+### Configuration
 
-* `env`: the parameter for `call`
-* `response`: a `Rack::Response` object that is returned by `call`
+The `roy` class method is used to define access control and method prefix. The
+following example should be self-explanatory enough:
+
+``` ruby
+class Example
+  include Roy
+  roy allow: [:get], prefix: :http_
+
+  def http_get(*args)
+    "get"
+  end
+end
+```
+
+### Environement
+
+Inside your handler methods, you have access to a `roy` readable attribute which
+is a struct containing the following fields:
+
+* `env`: the Rack environment
+* `response`: a `Rack::Response` object that will be returned by `call`
+* `request`: a `Rack::Request` build from the environment
 * `header`: a hash of headers that is part of `response`
-* `request`: a `Rack::Request` created from the environement given to `call`
-* `query`: a hash of parameters extracted from the query string
-* `data`: a hash of parameters extracted from the request body (POST, PUT)
+* `params`: parameters extracted from the query string and the request body
+* `conf`: the configuration set via `::roy`
 
-For both `query` and `data`, keys of the hash are symbols.
+The keys for `params` can be accessed either via a `String` or a `Symbol`
 
-You can easily handle errors with the provided `http_error` method. It takes an
-error code and an optional message. If no message is given, the standard message
-from the HTTP Status Codes list will be used (eg. Not Found for 404)
+### Control flow
+
+Your handler methods are run inside a `catch` block which will catch the `:halt`
+symbol. You can then use `throw` to abort a method but you must return an array
+composed of a status code and a message.
+
+Roy provides a `halt` method that takes a status code and an optional message.
+If there is no message it uses the default message from
+`Rack::Utils::HTTP_STATUS_CODES`
