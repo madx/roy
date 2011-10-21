@@ -42,6 +42,12 @@ class BaseTest < MiniTest::Unit::TestCase
     assert_respond_to app.class, :roy
   end
 
+  def test_defines_roy_attribute_with_defaults
+    assert_respond_to app, :roy
+    assert_equal       :'', app.roy.conf.prefix
+    assert_instance_of Set, app.roy.conf.allow
+  end
+
   def test_forward_allowed_methods
     get '/'
     ok!

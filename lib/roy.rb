@@ -9,10 +9,14 @@ module Roy
     base.send(:extend, ClassMethods)
   end
 
-  attr_reader :roy
+  def roy
+    @roy ||= Env.new.tap {|e|
+      e.conf = self.class.conf
+    }
+  end
 
   def call(env)
-    @roy = Env.new.tap { |e|
+    roy.tap { |e|
       e.env      = env
       e.request  = Rack::Request.new(env)
       e.response = Rack::Response.new
@@ -21,7 +25,6 @@ module Roy
       e.params.default_proc = proc do |hash, key|
         hash[key.to_s] if Symbol === key
       end
-      e.conf = self.class.conf
     }
 
     method = roy.env['REQUEST_METHOD'].downcase.to_sym
