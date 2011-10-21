@@ -43,6 +43,10 @@ class RenderTest < MiniTest::Unit::TestCase
     Tilt[:erb].new { Templates[tid] }.render(app, params, &block)
   end
 
+  def test_render_file_template
+    get '/template'
+    fail!
+  end
 
   def test_render_inline_template
     get '/inline'
