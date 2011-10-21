@@ -44,20 +44,20 @@ end
 
 ### Configuration
 
-The `roy` class method is used to define access control and method prefix. The
-following example should be self-explanatory enough:
+The `roy` class method is mainly used to define access control and method
+prefix. You can also define your own options.  The following example should be
+self-explanatory enough:
 
 ``` ruby
 class Example
   include Roy
-  roy allow: [:get], prefix: :http_
+  roy allow: [:get], prefix: :http_, foo: "bar"
 
   def http_get(*args)
-    "get"
+    "foo is #{roy.conf.bar}"
   end
 end
 ```
-
 ### Environement
 
 Inside your handler methods, you have access to a `roy` readable attribute which
