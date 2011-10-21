@@ -1,6 +1,6 @@
 require_relative 'helper'
 
-class RemoteLog
+class BaseTestObject
   include Roy
 
   attr_reader :history
@@ -27,11 +27,11 @@ class RemoteLog
   end
 end
 
-class RoyTest < MiniTest::Unit::TestCase
+class BaseTest < MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
   def app
-    RemoteLog.new
+    BaseTestObject.new
   end
 
   def test_provide_call
