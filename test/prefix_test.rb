@@ -1,6 +1,6 @@
 require_relative 'helper'
 
-class TestObject
+class PrefixTestObject
   include Roy
 
   roy allow: [:get], prefix: :http_
@@ -14,7 +14,7 @@ class PrefixTest < MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
   def app
-    TestObject.new
+    PrefixTestObject.new
   end
 
   def test_prefixing
