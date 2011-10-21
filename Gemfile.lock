@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     roy (0.0.1)
+      rack
 
 GEM
   remote: http://rubygems.org/
