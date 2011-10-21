@@ -1,5 +1,6 @@
 require 'set'
 require 'rack'
+require 'ostruct'
 require 'roy/version'
 
 module Roy
@@ -52,9 +53,7 @@ module Roy
     attr_reader :conf
 
     def roy(options={})
-      @conf       ||= Struct.new(:allow, :prefix).new
-      conf.allow  ||= Set.new
-      conf.prefix ||= :''
+      @conf ||= OpenStruct.new(allow: Set.new, prefix: :'')
 
       options.each do |k,v|
         case k
@@ -63,6 +62,8 @@ module Roy
           conf.allow.add(:head) if v.member?(:get)
         when :prefix
           conf.prefix = v
+        else
+          conf.send(:"#{k}=", v)
         end
       end
     end
