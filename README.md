@@ -1,16 +1,17 @@
 Roy
 ===
 
-Roy is a tiny module that aims to make any Ruby object Rack-friendly and provite
-it with a REST-like interface.
+Roy is a tiny module that aims to make any Ruby object Rack-friendly and
+provides it with a REST-like interface.
 
-Roy tries to be as less invasive as possible. In provides your objects with a
+Roy tries to be as less invasive as possible. It provides your objects with a
 `#call` method that takes a Rack environment and dispatchs to a regular method
 named after the HTTP method you want to catch.
 
 ## Tests
 
-You can run the tests by running `rake test`. They are written with Minitest.
+You can execute the tests by running `rake test`. They are written with
+Minitest.
 
 ## Example
 
@@ -54,7 +55,7 @@ class Example
   roy allow: [:get], prefix: :http_, foo: "bar"
 
   def http_get(*args)
-    "foo is #{roy.conf.bar}"
+    "foo is #{roy.conf.foo}"
   end
 end
 ```
