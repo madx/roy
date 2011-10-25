@@ -12,12 +12,17 @@ class RenderTestObject
   include Roy
   include Roy::Render
 
-  roy allow: [:get]
+  roy allow: [:get],
+      views: 'test/views'
 
   def get(*args)
     case args.first
     when 'template'
-      halt 403
+      render :erb, :test
+    when 'template_layout'
+      render :erb, :layout do
+        render :erb, :test
+      end
     when 'inline'
       render :erb, Templates[:simple]
     when 'locals'
@@ -45,7 +50,12 @@ class RenderTest < MiniTest::Unit::TestCase
 
   def test_render_file_template
     get '/template'
-    fail!
+    assert_equal inline(:simple), last_response.body
+  end
+
+  def test_render_file_layout
+    get '/template_layout'
+    assert_equal inline(:simple), last_response.body
   end
 
   def test_render_inline_template
