@@ -5,13 +5,13 @@ Roy is a tiny module that aims to make any Ruby object Rack-friendly and
 provide it with a REST-like interface.
 
 Roy tries to be as less invasive as possible. It provides your objects with a
-`#call` method that takes a Rack environment and dispatchs to a regular method
+`#call` method that takes a Rack environment and dispatches to a regular method
 named after the HTTP method you want to catch.
 
 ## Tests
 
 You can execute the tests by running `rake test`. They are written with
-Minitest.
+MiniTest.
 
 ## Example
 
@@ -59,10 +59,10 @@ class Example
   end
 end
 ```
-### Environement
+### Environment
 
 Inside your handler methods, you have access to a `roy` readable attribute which
-is a struct containing the following fields:
+is a Struct containing the following fields:
 
 * `env`: the Rack environment
 * `response`: a `Rack::Response` object that will be returned by `call`
@@ -82,3 +82,15 @@ composed of a status code and a message.
 Roy provides a `halt` method that takes a status code and an optional message.
 If there is no message it uses the default message from
 `Rack::Utils::HTTP_STATUS_CODES`
+
+### Plugins
+
+Various plugins are shipped with Roy, here is the full list:
+
+* **after**: modify the response after the app has been called
+* **before**: modify the environment before calling the app
+* **render**: integration with Tilt
+* **plugins**: a simple plugin loader
+
+Each plugin is designed to do only one thing. Thus it is very easy to take a
+look at the code and see how the plugin works.
