@@ -1,11 +1,10 @@
 require_relative 'helper'
 require 'roy/plugins'
 require 'roy/before'
-require 'roy/after'
 
 class PluginsTestObject
   include Roy
-  include Roy::Plugins(Before, After)
+  include Roy::Plugins(Before, :after)
 
   roy allow: [:get],
       before: lambda { |env|
