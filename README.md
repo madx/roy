@@ -2,7 +2,7 @@ Roy
 ===
 
 Roy is a tiny module that aims to make any Ruby object Rack-friendly and
-provides it with a REST-like interface.
+provide it with a REST-like interface.
 
 Roy tries to be as less invasive as possible. It provides your objects with a
 `#call` method that takes a Rack environment and dispatchs to a regular method
