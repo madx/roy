@@ -5,6 +5,7 @@ require 'roy/version'
 
 module Roy
   Env = Struct.new(:env, :request, :response, :headers, :params, :conf)
+  Defaults = OpenStruct.new(allow: Set.new, prefix: :'')
 
   def self.included(base)
     base.send(:extend, ClassMethods)
@@ -52,16 +53,16 @@ module Roy
   module ClassMethods
     attr_reader :conf
 
-    def roy(options={})
-      @conf ||= OpenStruct.new(allow: Set.new, prefix: :'')
+    def self.extended(base)
+      base.instance_eval { @conf ||= Defaults.dup }
+    end
 
+    def roy(options={})
       options.each do |k,v|
         case k
         when :allow
           conf.allow.merge(v)
           conf.allow.add(:head) if v.member?(:get)
-        when :prefix
-          conf.prefix = v
         else
           conf.send(:"#{k}=", v)
         end
