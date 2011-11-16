@@ -11,19 +11,19 @@ class BaseTestObject
 
   roy allow: [:get, :put, :custom]
 
-  def get(*args)
+  def get(path)
     history.inspect
   end
 
-  def put(*args)
+  def put(path)
     Roy.halt 400 unless roy.params[:body]
     history << roy.params[:body]
     history << roy.params[:foo] if roy.params[:foo]
-    get
+    get(path)
   end
 
-  def custom(*args)
-    args.join('+')
+  def custom(path)
+    path
   end
 end
 
@@ -51,7 +51,7 @@ class BaseTest < MiniTest::Unit::TestCase
   def test_forward_allowed_methods
     get '/'
     ok!
-    assert_equal app.get, last_response.body
+    assert_equal app.get('/'), last_response.body
   end
 
   def test_block_forbidden_methods
@@ -64,6 +64,7 @@ class BaseTest < MiniTest::Unit::TestCase
   def test_set_allowed_methods
     assert_includes app.class.conf.allow, :get
     assert_includes app.class.conf.allow, :put
+    assert_includes app.class.conf.allow, :custom
     refute_includes app.class.conf.allow, :post
   end
 
@@ -89,9 +90,9 @@ class BaseTest < MiniTest::Unit::TestCase
     assert_equal %w(hello bar).inspect, last_response.body
   end
 
-  def test_path_components_as_method_arguments
-    request '/a/b/c', :method => 'CUSTOM'
+  def test_custom_methods
+    request '/', :method => 'CUSTOM'
     ok!
-    assert_equal 'a+b+c', last_response.body
+    assert_equal '/', last_response.body
   end
 end

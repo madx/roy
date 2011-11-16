@@ -10,7 +10,7 @@ class BeforeTestObject
         env['REQUEST_METHOD'] = 'GET'
       }
 
-  def get(*args)
+  def get(path)
     'success'
   end
 end

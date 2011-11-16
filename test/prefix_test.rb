@@ -5,7 +5,7 @@ class PrefixTestObject
 
   roy allow: [:get], prefix: :http_
 
-  def http_get(*args)
+  def http_get(path)
     'success'
   end
 end

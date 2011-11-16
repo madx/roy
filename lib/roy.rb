@@ -30,16 +30,15 @@ module Roy
     }
 
     method = roy.env['REQUEST_METHOD'].downcase.to_sym
-    args = roy.env['PATH_INFO'].sub(/^\/+/, '').split(/\/+/).map { |arg|
-      Rack::Utils.unescape(arg)
-    }
+    path = roy.env['PATH_INFO']
+    path = "/#{path}" unless path[0] == '/'
 
     method, was_head = :get, true if method == :head
 
     roy.response.status, body = catch(:halt) do
       halt(405) unless roy.conf.allow.include?(method)
       prefixed_method = :"#{roy.conf.prefix}#{method}"
-      [roy.response.status, send(prefixed_method, *args)]
+      [roy.response.status, send(prefixed_method, path)]
     end
 
     roy.response.write(body) unless was_head

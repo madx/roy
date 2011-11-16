@@ -10,7 +10,7 @@ class AfterTestObject
         response.header['Content-Type'] = 'text/plain'
       }
 
-  def get(*args)
+  def get _
     'success'
   end
 end

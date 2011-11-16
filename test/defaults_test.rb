@@ -6,7 +6,7 @@ Roy::Defaults.prefix = :http_
 class DefaultsTestObject
   include Roy
 
-  def http_get(*args)
+  def http_get(path)
     'success'
   end
 end

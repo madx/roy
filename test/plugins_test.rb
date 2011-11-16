@@ -14,7 +14,7 @@ class PluginsTestObject
         response.header['Content-Type'] = 'text/plain'
       }
 
-  def get(*args)
+  def get(path)
     'success'
   end
 end

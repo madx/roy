@@ -15,21 +15,21 @@ class RenderTestObject
   roy allow: [:get],
       views: 'test/views'
 
-  def get(*args)
-    case args.first
-    when 'template'
+  def get(path)
+    case path
+    when '/template'
       render :erb, :test
-    when 'template_layout'
+    when '/template_layout'
       render :erb, :layout do
         render :erb, :test
       end
-    when 'inline'
+    when '/inline'
       render :erb, Templates[:simple]
-    when 'locals'
+    when '/locals'
       render :erb, Templates[:locals], person: 'Bob'
-    when 'scope'
+    when '/scope'
       render :erb, Templates[:scope]
-    when 'yield'
+    when '/yield'
       render :erb, Templates[:yield] do
         render :erb, Templates[:simple]
       end
