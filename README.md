@@ -25,17 +25,17 @@ class MessageQueue
     @stack = []
   end
 
-  def get
+  def get(_)
     @stack.inspect
   end
 
-  def post
+  def post(_)
     halt 403 unless roy.params[:item]
     @stack << roy.params[:item].strip
     get
   end
 
-  def delete
+  def delete(_)
     @stack.shift.inspect
   end
 end
@@ -54,7 +54,7 @@ class Example
   include Roy
   roy allow: [:get], prefix: :http_, foo: "bar"
 
-  def http_get(*args)
+  def http_get(path)
     "foo is #{roy.conf.foo}"
   end
 end
