@@ -6,7 +6,8 @@ module Roy
       names.each do |name|
         if name.is_a?(Symbol)
           require "roy/plugin/#{name}"
-          name = Roy::Plugin.const_get("#{name}".capitalize.to_sym)
+          const = "#{name}".capitalize.gsub(/_(\w)/) {|m| m[1].upcase }.to_sym
+          name = Roy::Plugin.const_get(const)
         end
         mod.send(:include, name)
       end
