@@ -1,9 +1,9 @@
-require_relative 'helper'
-require 'roy/before'
+require_relative '../helper'
+require 'roy/plugin/before'
 
 class BeforeTestObject
   include Roy
-  include Roy::Before
+  include Roy::Plugin::Before
 
   roy allow: [:get],
       before: lambda { |env|

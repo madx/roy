@@ -1,9 +1,9 @@
-require_relative 'helper'
-require 'roy/after'
+require_relative '../helper'
+require 'roy/plugin/after'
 
 class AfterTestObject
   include Roy
-  include Roy::After
+  include Roy::Plugin::After
 
   roy allow: [:get],
       after: lambda { |response|

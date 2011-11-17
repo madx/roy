@@ -2,6 +2,7 @@ require 'set'
 require 'rack'
 require 'ostruct'
 require 'roy/version'
+require 'roy/plugins'
 
 module Roy
   Env = Struct.new(:env, :request, :response, :headers, :params, :conf)
