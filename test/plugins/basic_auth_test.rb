@@ -8,7 +8,7 @@ class BasicAuthTestObject
   roy allow: [:get],
       auth: {
         realm: "Custom",
-        credentials: {'user' => 'password'}
+        logic: ->(_, u, p) { %w(user password) == [u, p] }
       }
 
   def get(path)
