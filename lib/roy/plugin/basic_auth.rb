@@ -10,12 +10,12 @@ module Roy
       end
 
       def authorized?(data=nil)
-        @auth ||= Rack::Auth::Basic::Request.new(roy.request.env)
+        auth = Rack::Auth::Basic::Request.new(roy.request.env)
 
-        @auth.provided? && @auth.basic? && @auth.credentials &&
+        auth.provided? && auth.basic? && auth.credentials &&
           (roy.conf.auth[:logic] || ->(data, u, p) {
             %w(admin password) == [u, p]
-           }).(data, *@auth.credentials)
+           }).(data, *auth.credentials)
       end
     end
   end
