@@ -67,7 +67,7 @@ is a Struct containing the following fields:
 * `env`: the Rack environment
 * `response`: a `Rack::Response` object that will be returned by `call`
 * `request`: a `Rack::Request` build from the environment
-* `header`: a hash of headers that is part of `response`
+* `headers`: a hash of headers that is part of `response`
 * `params`: parameters extracted from the query string and the request body
 * `conf`: the configuration set via `::roy`
 
