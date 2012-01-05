@@ -17,20 +17,20 @@ class RenderTestObject
   def get(path)
     case path
     when '/template'
-      render :erb, :test
+      roy.render :erb, :test
     when '/template_layout'
-      render :erb, :layout do
-        render :erb, :test
+      roy.render :erb, :layout do
+        roy.render :erb, :test
       end
     when '/inline'
-      render :erb, Templates[:simple]
+      roy.render :erb, Templates[:simple]
     when '/locals'
-      render :erb, Templates[:locals], person: 'Bob'
+      roy.render :erb, Templates[:locals], person: 'Bob'
     when '/scope'
-      render :erb, Templates[:scope]
+      roy.render :erb, Templates[:scope]
     when '/yield'
-      render :erb, Templates[:yield] do
-        render :erb, Templates[:simple]
+      roy.render :erb, Templates[:yield] do
+        roy.render :erb, Templates[:simple]
       end
     end
   end
