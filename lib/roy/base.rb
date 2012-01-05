@@ -9,7 +9,6 @@ require 'ostruct'
 require 'roy/version'
 
 module Roy
-  Env = Struct.new(:env, :request, :response, :headers, :params, :conf)
   Defaults = OpenStruct.new(allow: Set.new, prefix: :'')
 
   def self.included(base)
@@ -17,19 +16,19 @@ module Roy
   end
 
   def roy
-    @roy ||= Env.new.tap {|e|
-      e.conf = self.class.conf
+    @roy ||= OpenStruct.new.tap {|r|
+      r.conf = self.class.conf
     }
   end
 
   def call(env)
-    roy.tap { |e|
-      e.env      = env
-      e.request  = Rack::Request.new(env)
-      e.response = Rack::Response.new
-      e.headers  = e.response.header
-      e.params   = e.request.GET.merge(e.request.POST)
-      e.params.default_proc = proc do |hash, key|
+    roy.tap { |r|
+      r.env      = env
+      r.request  = Rack::Request.new(env)
+      r.response = Rack::Response.new
+      r.headers  = r.response.header
+      r.params   = r.request.GET.merge(r.request.POST)
+      r.params.default_proc = proc do |hash, key|
         hash[key.to_s] if Symbol === key
       end
     }
