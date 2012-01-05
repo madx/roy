@@ -30,7 +30,7 @@ class MessageQueue
   end
 
   def post(_)
-    halt 403 unless roy.params[:item]
+    roy.halt 403 unless roy.params[:item]
     @stack << roy.params[:item].strip
     get
   end
@@ -62,7 +62,7 @@ end
 ### Environment
 
 Inside your handler methods, you have access to a `roy` readable attribute which
-is a Struct containing the following fields:
+is an OpenStruct containing at least the following fields:
 
 * `env`: the Rack environment
 * `response`: a `Rack::Response` object that will be returned by `call`
@@ -79,7 +79,7 @@ Your handler methods are run inside a `catch` block which will catch the `:halt`
 symbol. You can then use `throw` to abort a method but you must return an array
 composed of a status code and a message.
 
-Roy provides a `halt` method that takes a status code and an optional message.
+Roy provides a `roy.halt` method that takes a status code and an optional message.
 If there is no message it uses the default message from
 `Rack::Utils::HTTP_STATUS_CODES`
 
