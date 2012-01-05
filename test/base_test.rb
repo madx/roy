@@ -16,7 +16,7 @@ class BaseTestObject
   end
 
   def put(path)
-    halt 400 unless roy.params[:body]
+    roy.halt 400 unless roy.params[:body]
     history << roy.params[:body]
     history << roy.params[:foo] if roy.params[:foo]
     get(path)
@@ -74,7 +74,7 @@ class BaseTest < MiniTest::Unit::TestCase
 
   def test_roy_halt
     assert_throws :halt do
-      app.halt 200
+      app.roy.halt 200
     end
   end
 

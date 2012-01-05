@@ -17,7 +17,12 @@ module Roy
 
   def roy
     @roy ||= OpenStruct.new.tap {|r|
+      r.app  = self
       r.conf = self.class.conf
+
+      def r.halt(code, message=nil)
+        throw :halt, [code, message || Rack::Utils::HTTP_STATUS_CODES[code]]
+      end
     }
   end
 
@@ -39,17 +44,13 @@ module Roy
     method, was_head = :get, true if method == :head
 
     roy.response.status, body = catch(:halt) do
-      halt(405) unless roy.conf.allow.include?(method)
+      roy.halt(405) unless roy.conf.allow.include?(method)
       prefixed_method = :"#{roy.conf.prefix}#{method}"
       [roy.response.status, send(prefixed_method, roy.env['PATH_INFO'])]
     end
 
     roy.response.write(body) unless was_head
     roy.response.finish
-  end
-
-  def halt(code, message=nil)
-    throw :halt, [code, message || Rack::Utils::HTTP_STATUS_CODES[code]]
   end
 
   module ClassMethods
