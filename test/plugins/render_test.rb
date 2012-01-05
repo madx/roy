@@ -1,5 +1,4 @@
 require_relative '../helper'
-require 'roy/plugin/render'
 
 Templates = {
   simple: %q(<%= "Hello world!" %>),
@@ -10,10 +9,10 @@ Templates = {
 
 class RenderTestObject
   include Roy
-  include Roy::Plugin::Render
 
   roy allow: [:get],
-      views: 'test/views'
+      views: 'test/views',
+      use: [:render]
 
   def get(path)
     case path

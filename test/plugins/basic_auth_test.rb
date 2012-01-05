@@ -1,11 +1,9 @@
 require_relative '../helper'
-require 'roy/plugin/basic_auth'
 
 class BasicAuthTestObject
   include Roy
-  include Roy::Plugin::BasicAuth
 
-  roy allow: [:get],
+  roy use: [:basic_auth], allow: [:get],
       auth: {
         realm: "Custom",
         logic: ->(_, u, p) { %w(user password) == [u, p] }

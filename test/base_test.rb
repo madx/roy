@@ -16,7 +16,7 @@ class BaseTestObject
   end
 
   def put(path)
-    Roy.halt 400 unless roy.params[:body]
+    halt 400 unless roy.params[:body]
     history << roy.params[:body]
     history << roy.params[:foo] if roy.params[:foo]
     get(path)

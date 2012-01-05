@@ -1,11 +1,9 @@
 require_relative '../helper'
-require 'roy/plugin/after'
 
 class AfterTestObject
   include Roy
-  include Roy::Plugin::After
 
-  roy allow: [:get],
+  roy use: [:after], allow: [:get],
       after: lambda { |response|
         response.header['Content-Type'] = 'text/plain'
       }
