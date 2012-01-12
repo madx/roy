@@ -9,7 +9,7 @@ require 'ostruct'
 require 'roy/version'
 
 module Roy
-  Defaults = OpenStruct.new(allow: Set.new, prefix: :'')
+  Defaults = {allow: [:get], prefix: :''}
 
   def self.included(base)
     base.send(:extend, ClassMethods)
@@ -57,14 +57,17 @@ module Roy
     attr_reader :conf
 
     def self.extended(base)
-      base.instance_eval { @conf ||= Defaults.dup }
+      base.instance_eval do
+        @conf ||= OpenStruct.new 
+        roy Defaults
+      end
     end
 
     def roy(options={})
       options.each do |key,value|
         case key
         when :allow
-          conf.allow.merge(value)
+          (conf.allow ||= Set.new).merge(value)
           conf.allow.add(:head) if value.member?(:get)
         when :use
           value.each do |name|
