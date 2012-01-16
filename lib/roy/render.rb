@@ -3,8 +3,7 @@ require 'tilt'
 module Roy
   module Render
 
-    def initialize
-      super
+    def self.setup(roy)
       class << roy
         def render(engine, view_or_string, params={}, &block)
           options = conf.render || {}
@@ -21,5 +20,6 @@ module Roy
         end
       end
     end
+
   end
 end

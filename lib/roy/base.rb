@@ -19,9 +19,8 @@ module Roy
     @roy ||= OpenStruct.new.tap {|r|
       r.app  = self
       r.conf = self.class.conf
-
-      def r.halt(code, message=nil)
-        throw :halt, [code, message || Rack::Utils::HTTP_STATUS_CODES[code]]
+      self.class.ancestors.each do |mod|
+        mod.setup(r) if mod.respond_to?(:setup)
       end
     }
   end
@@ -58,7 +57,7 @@ module Roy
 
     def self.extended(base)
       base.instance_eval do
-        @conf ||= OpenStruct.new 
+        @conf ||= OpenStruct.new
         roy Defaults
       end
     end
