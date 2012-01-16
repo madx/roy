@@ -19,7 +19,7 @@ module Roy
     @roy ||= OpenStruct.new.tap {|r|
       r.app  = self
       r.conf = self.class.conf
-      self.class.ancestors.each do |mod|
+      self.class.ancestors.reverse.each do |mod|
         mod.setup(r) if mod.respond_to?(:setup)
       end
     }
