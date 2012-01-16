@@ -9,7 +9,7 @@ require 'ostruct'
 require 'roy/version'
 
 module Roy
-  Defaults = {allow: [:get], prefix: :''}
+  Defaults = {allow: [:get], prefix: :'', use: [:halt]}
 
   def self.included(base)
     base.send(:extend, ClassMethods)

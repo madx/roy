@@ -2,7 +2,7 @@ require_relative 'helper'
 
 Roy::Defaults.tap do |conf|
   conf[:prefix] = :http_
-  conf[:use]    = [:after]
+  conf[:use]    = [:halt, :after]
 end
 
 class DefaultsTestObject
