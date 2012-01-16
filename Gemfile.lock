@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    roy (0.5.0)
+    roy (0.5.1)
       rack
 
 GEM
