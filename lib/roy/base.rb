@@ -7,6 +7,7 @@ require 'ostruct'
 
 # local dependencies
 require 'roy/version'
+require 'roy/context'
 
 module Roy
   Defaults = {allow: [:get], prefix: :'', use: [:halt]}
@@ -16,26 +17,11 @@ module Roy
   end
 
   def roy
-    @roy ||= OpenStruct.new.tap {|r|
-      r.app  = self
-      r.conf = self.class.conf
-      self.class.ancestors.reverse.each do |mod|
-        mod.setup(r) if mod.respond_to?(:setup)
-      end
-    }
+    @roy ||= Context.new(self)
   end
 
   def call(env)
-    roy.tap { |r|
-      r.env      = env
-      r.request  = Rack::Request.new(env)
-      r.response = Rack::Response.new
-      r.headers  = r.response.header
-      r.params   = r.request.GET.merge(r.request.POST)
-      r.params.default_proc = proc do |hash, key|
-        hash[key.to_s] if Symbol === key
-      end
-    }
+    roy.prepare!(env)
 
     method = roy.env['REQUEST_METHOD'].downcase.to_sym
     roy.env['PATH_INFO'].sub!(/^([^\/])/, '/\1')
