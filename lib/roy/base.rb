@@ -9,17 +9,23 @@ require 'ostruct'
 require 'roy/version'
 require 'roy/context'
 
+# This is the main module that applications should include.
 module Roy
+
+  # Default options.
   Defaults = {allow: [:get], prefix: :'', use: [:halt]}
 
+  # Extend the class with the ClassMethods module.
   def self.included(base)
     base.send(:extend, ClassMethods)
   end
 
+  # Returns the application context or initialize it
   def roy
     @roy ||= Context.new(self)
   end
 
+  # A Rack-compliant #call method.
   def call(env)
     roy.prepare!(env)
 
@@ -41,6 +47,7 @@ module Roy
   module ClassMethods
     attr_reader :conf
 
+    # Setup default configuration for the application.
     def self.extended(base)
       base.instance_eval do
         @conf ||= OpenStruct.new
@@ -48,6 +55,7 @@ module Roy
       end
     end
 
+    # Set options for the application
     def roy(options={})
       options.each do |key,value|
         case key

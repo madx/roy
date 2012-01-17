@@ -1,6 +1,32 @@
 require 'tilt'
 
 module Roy
+  # A simple template rendering mechanism based on Tilt.
+  #
+  # == Related options:
+  # roy.conf.render::
+  #   A hash of options to pass to Tilt.
+  # roy.conf.views::
+  #   The directory where views are kept.
+  #
+  # @example Using <tt>roy.render</tt>
+  #
+  #   class ErbApp
+  #     include Roy
+  #
+  #     roy use: [:render]
+  #
+  #     def get(_)
+  #       roy.render :erb, "Hello, <%= roy.params[:p] || \"world\" %>!\n"
+  #     end
+  #   end
+  #
+  # @example Test
+  #
+  #   $ curl -i localhost:9292
+  #   Hello, world!
+  #   $ curl -i localhost:9292/?p=blah
+  #   Hello, blah!
   module Render
 
     def self.setup(roy)
