@@ -4,7 +4,7 @@ require "roy/version"
 
 Gem::Specification.new do |s|
   s.name        = "roy"
-  s.version     = Roy::VERSION
+  s.version     = Roy.version
   s.authors     = ["madx"]
   s.email       = ["madx@yapok.org"]
   s.homepage    = "https://github.com/madx/roy"
