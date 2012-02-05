@@ -1,20 +1,26 @@
 module Roy
   module BasicAuth
-    def protected!(data=nil)
-      unless authorized?(data)
-        realm = roy.conf.auth && roy.conf.auth[:realm] || 'Realm'
-        roy.response['WWW-Authenticate'] = %(Basic realm="#{realm}")
-        roy.halt 401
-      end
+    def self.setup(roy)
+      roy.send(:extend, InstanceMethods)
     end
 
-    def authorized?(data=nil)
-      auth = Rack::Auth::Basic::Request.new(roy.request.env)
+    module InstanceMethods
+      def protected!(data=nil)
+        unless authorized?(data)
+          realm = conf.auth && conf.auth[:realm] || 'Realm'
+          response['WWW-Authenticate'] = %(Basic realm="#{realm}")
+          halt 401
+        end
+      end
 
-      auth.provided? && auth.basic? && auth.credentials &&
-        (roy.conf.auth[:logic] || ->(data, u, p) {
-          %w(admin password) == [u, p]
-         }).(data, *auth.credentials)
+      def authorized?(data=nil)
+        auth = Rack::Auth::Basic::Request.new(request.env)
+
+        auth.provided? && auth.basic? && auth.credentials &&
+          (conf.auth[:logic] || ->(data, u, p) {
+            %w(admin password) == [u, p]
+           }).(data, *auth.credentials)
+      end
     end
   end
 end

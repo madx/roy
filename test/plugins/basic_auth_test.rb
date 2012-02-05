@@ -10,7 +10,7 @@ class BasicAuthTestObject
       }
 
   def get(path)
-    protected!
+    roy.protected!
     'success'
   end
 end
