@@ -1,4 +1,5 @@
 module Roy
+  # Roy version
   VERSION = [0, 5, 2]
 
   # Return the version as a String.

@@ -1,7 +1,33 @@
 module Roy
+  # Application context for Roy applications.
+  #
+  # Everything must be namespaced in this context to avoid any clashes and to
+  # make the code cleaner.
   class Context
-    attr_reader :app, :conf, :env, :request, :response, :headers, :params
+    # Returns the current application
+    attr_reader :app
 
+    # Returns the application's configuration
+    attr_reader :conf
+
+    # Returns the environment passed to #call
+    attr_reader :env
+
+    # Returns the current request
+    attr_reader :request
+
+    # Returns the current response
+    attr_reader :response
+
+    # Returns the current response's headers
+    attr_reader :headers
+
+    # Returns the current request's params
+    attr_reader :params
+
+    # Creates a new Context object.
+    #
+    # @param app the context's application
     def initialize(app)
       @app  = app
       @conf = app.class.conf
@@ -11,6 +37,9 @@ module Roy
       end
     end
 
+    # Initializes the attributes based on an environment.
+    #
+    # @param env the environment to use
     def prepare!(env)
       @env      = env
       @request  = Rack::Request.new(env)

@@ -1,7 +1,6 @@
 module Roy
-  # This module add a <tt>halt</tt> method to the application context that
-  # allows you to break during a handler and immediately return a status code
-  # and a body.
+  # This module adds a +halt+ method to the application context that allows you
+  # to break during a handler and immediately return a status code and a body.
   #
   # Included by default.
   #
@@ -26,7 +25,7 @@ module Roy
     end
 
     module InstanceMethods
-      # Break from the current <tt>catch(:halt)</tt> block
+      # Break from the current +catch(:halt)+ block
       #
       # @param [Integer] code the response status code.
       # @param [String] message the response body.

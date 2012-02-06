@@ -2,7 +2,7 @@ module Roy
   # This module allows you to modify the environment before it is handled by the
   # application. It does this by overriding the {Roy#call} method.
   #
-  # == Related options:
+  # == Configuration:
   # roy.conf.before::
   #   A proc object that will be called with the environment as argument.
   #   Defaults to identity if not set.

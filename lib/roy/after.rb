@@ -2,7 +2,7 @@ module Roy
   # This module allows you to modify the response before it is sent to the
   # client. It does this by overriding the {Roy#call} method.
   #
-  # == Related options:
+  # == Configuration:
   # roy.conf.after::
   #   A proc object that will be called with the response as argument.
   #   Defaults to identity if not set.
