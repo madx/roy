@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Roy : make your objects REST-friendly" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Roy</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/madx/roy">Fork Me on GitHub</a>
+
+          <h1 id="project_title">Roy</h1>
+          <h2 id="project_tagline">make your objects REST-friendly</h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/madx/roy/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/madx/roy/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Roy</h1>
+
+<p>Roy is a tiny module that aims to make any Ruby object Rack-friendly and
+provide it with a REST-like interface.</p>
+
+<p>Roy tries to be as less invasive as possible. It provides your objects with a
+<code>#call</code> method that takes a Rack environment and dispatches to a regular method
+named after the HTTP method you want to catch.</p>
+
+<h2>Tests</h2>
+
+<p>You can execute the tests by running <code>rake test</code>. They are written with
+MiniTest.</p>
+
+<h2>Example</h2>
+
+<div class="highlight">
+<pre><span class="k">class</span> <span class="nc">MessageQueue</span>
+  <span class="kp">include</span> <span class="no">Roy</span>
+
+  <span class="n">roy</span> <span class="n">allow</span><span class="p">:</span> <span class="o">[</span><span class="ss">:get</span><span class="p">,</span> <span class="ss">:post</span><span class="p">,</span> <span class="ss">:delete</span><span class="o">]</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@stack</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">_</span><span class="p">)</span>
+    <span class="vi">@stack</span><span class="o">.</span><span class="n">inspect</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">_</span><span class="p">)</span>
+    <span class="n">roy</span><span class="o">.</span><span class="n">halt</span> <span class="mi">403</span> <span class="k">unless</span> <span class="n">roy</span><span class="o">.</span><span class="n">params</span><span class="o">[</span><span class="ss">:item</span><span class="o">]</span>
+    <span class="vi">@stack</span> <span class="o">&lt;&lt;</span> <span class="n">roy</span><span class="o">.</span><span class="n">params</span><span class="o">[</span><span class="ss">:item</span><span class="o">].</span><span class="n">strip</span>
+    <span class="n">get</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">_</span><span class="p">)</span>
+    <span class="vi">@stack</span><span class="o">.</span><span class="n">shift</span><span class="o">.</span><span class="n">inspect</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<h2>Docs</h2>
+
+<h3>Configuration</h3>
+
+<p>The <code>roy</code> class method is mainly used to define access control and method
+prefix. You can also define your own options.  The following example should be
+self-explanatory enough:</p>
+
+<div class="highlight">
+<pre><span class="k">class</span> <span class="nc">Example</span>
+  <span class="kp">include</span> <span class="no">Roy</span>
+  <span class="n">roy</span> <span class="n">allow</span><span class="p">:</span> <span class="o">[</span><span class="ss">:get</span><span class="o">]</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="ss">:http_</span><span class="p">,</span> <span class="n">foo</span><span class="p">:</span> <span class="s2">"bar"</span>
+
+  <span class="k">def</span> <span class="nf">http_get</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="s2">"foo is </span><span class="si">#{</span><span class="n">roy</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">foo</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<h3>Environment</h3>
+
+<p>Inside your handler methods, you have access to a <code>roy</code> readable attribute which
+is an OpenStruct containing at least the following fields:</p>
+
+<ul>
+<li>
+<code>env</code>: the Rack environment</li>
+<li>
+<code>response</code>: a <code>Rack::Response</code> object that will be returned by <code>call</code>
+</li>
+<li>
+<code>request</code>: a <code>Rack::Request</code> build from the environment</li>
+<li>
+<code>headers</code>: a hash of headers that is part of <code>response</code>
+</li>
+<li>
+<code>params</code>: parameters extracted from the query string and the request body</li>
+<li>
+<code>conf</code>: the configuration set via <code>::roy</code>
+</li>
+</ul><p>The keys for <code>params</code> can be accessed either via a <code>String</code> or a <code>Symbol</code></p>
+
+<h3>Control flow</h3>
+
+<p>Your handler methods are run inside a <code>catch</code> block which will catch the <code>:halt</code>
+symbol. You can then use <code>throw</code> to abort a method but you must return an array
+composed of a status code and a message.</p>
+
+<p>Roy provides a <code>roy.halt</code> method that takes a status code and an optional message.
+If there is no message it uses the default message from
+<code>Rack::Utils::HTTP_STATUS_CODES</code></p>
+
+<h3>Plugins</h3>
+
+<p>Various plugins are shipped with Roy, here is the full list:</p>
+
+<ul>
+<li>
+<strong>after</strong>: modify the response after the app has been called</li>
+<li>
+<strong>before</strong>: modify the environment before calling the app</li>
+<li>
+<strong>render</strong>: integration with Tilt</li>
+<li>
+<strong>plugins</strong>: a simple plugin loader</li>
+</ul><p>Each plugin is designed to do only one thing. Thus it is very easy to take a
+look at the code and see how the plugin works.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Roy maintained by <a href="https://github.com/madx">madx</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
